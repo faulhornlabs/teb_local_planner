@@ -42,7 +42,6 @@
 
 #include <teb_local_planner/pose_se2.h>
 #include <teb_local_planner/obstacles.h>
-#include <visualization_msgs/Marker.h>
 
 namespace teb_local_planner
 {
@@ -100,7 +99,7 @@ public:
     * @param[out] markers container of marker messages describing the robot shape
     * @param color Color of the footprint
     */
-  virtual void visualizeRobot(const PoseSE2& current_pose, std::vector<visualization_msgs::Marker>& markers, const std_msgs::ColorRGBA& color) const {}
+  //virtual void visualizeRobot(const PoseSE2& current_pose, std::vector<visualization_msgs::Marker>& markers, const std_msgs::ColorRGBA& color) const {}
   
   
   /**
@@ -234,16 +233,16 @@ public:
     * @param[out] markers container of marker messages describing the robot shape
     * @param color Color of the footprint
     */
-  virtual void visualizeRobot(const PoseSE2& current_pose, std::vector<visualization_msgs::Marker>& markers, const std_msgs::ColorRGBA& color) const
-  {
-    markers.resize(1);
-    visualization_msgs::Marker& marker = markers.back();
-    marker.type = visualization_msgs::Marker::CYLINDER;
-    current_pose.toPoseMsg(marker.pose);
-    marker.scale.x = marker.scale.y = 2*radius_; // scale = diameter
-    marker.scale.z = 0.05;
-    marker.color = color;
-  }
+  //virtual void visualizeRobot(const PoseSE2& current_pose, std::vector<visualization_msgs::Marker>& markers, const std_msgs::ColorRGBA& color) const
+  //{
+  //  markers.resize(1);
+  //  visualization_msgs::Marker& marker = markers.back();
+  //  marker.type = visualization_msgs::Marker::CYLINDER;
+  //  current_pose.toPoseMsg(marker.pose);
+  //  marker.scale.x = marker.scale.y = 2*radius_; // scale = diameter
+  //  marker.scale.z = 0.05;
+  //  marker.color = color;
+  //}
   
   /**
    * @brief Compute the inscribed radius of the footprint model
@@ -328,35 +327,35 @@ public:
     * @param[out] markers container of marker messages describing the robot shape
     * @param color Color of the footprint
     */
-  virtual void visualizeRobot(const PoseSE2& current_pose, std::vector<visualization_msgs::Marker>& markers, const std_msgs::ColorRGBA& color) const
-  {    
-    Eigen::Vector2d dir = current_pose.orientationUnitVec();
-    if (front_radius_>0)
-    {
-      markers.push_back(visualization_msgs::Marker());
-      visualization_msgs::Marker& marker1 = markers.back();
-      marker1.type = visualization_msgs::Marker::CYLINDER;
-      current_pose.toPoseMsg(marker1.pose);
-      marker1.pose.position.x += front_offset_*dir.x();
-      marker1.pose.position.y += front_offset_*dir.y();
-      marker1.scale.x = marker1.scale.y = 2*front_radius_; // scale = diameter
-//       marker1.scale.z = 0.05;
-      marker1.color = color;
-
-    }
-    if (rear_radius_>0)
-    {
-      markers.push_back(visualization_msgs::Marker());
-      visualization_msgs::Marker& marker2 = markers.back();
-      marker2.type = visualization_msgs::Marker::CYLINDER;
-      current_pose.toPoseMsg(marker2.pose);
-      marker2.pose.position.x -= rear_offset_*dir.x();
-      marker2.pose.position.y -= rear_offset_*dir.y();
-      marker2.scale.x = marker2.scale.y = 2*rear_radius_; // scale = diameter
-//       marker2.scale.z = 0.05;
-      marker2.color = color;
-    }
-  }
+  //virtual void visualizeRobot(const PoseSE2& current_pose, std::vector<visualization_msgs::Marker>& markers, const std_msgs::ColorRGBA& color) const
+  //{    
+  //  Eigen::Vector2d dir = current_pose.orientationUnitVec();
+  //  if (front_radius_>0)
+  //  {
+  //    markers.push_back(visualization_msgs::Marker());
+  //    visualization_msgs::Marker& marker1 = markers.back();
+  //    marker1.type = visualization_msgs::Marker::CYLINDER;
+  //    current_pose.toPoseMsg(marker1.pose);
+  //    marker1.pose.position.x += front_offset_*dir.x();
+  //    marker1.pose.position.y += front_offset_*dir.y();
+  //    marker1.scale.x = marker1.scale.y = 2*front_radius_; // scale = diameter
+////       marker1.scale.z = 0.05;
+  //    marker1.color = color;
+  //
+  //  }
+  //  if (rear_radius_>0)
+  //  {
+  //    markers.push_back(visualization_msgs::Marker());
+  //    visualization_msgs::Marker& marker2 = markers.back();
+  //    marker2.type = visualization_msgs::Marker::CYLINDER;
+  //    current_pose.toPoseMsg(marker2.pose);
+  //    marker2.pose.position.x -= rear_offset_*dir.x();
+  //    marker2.pose.position.y -= rear_offset_*dir.y();
+  //    marker2.scale.x = marker2.scale.y = 2*rear_radius_; // scale = diameter
+////       marker2.scale.z = 0.05;
+  //    marker2.color = color;
+  //  }
+  //}
   
   /**
    * @brief Compute the inscribed radius of the footprint model
@@ -393,7 +392,7 @@ public:
     * @param line_start start coordinates (only x and y) of the line (w.r.t. robot center at (0,0))
     * @param line_end end coordinates (only x and y) of the line (w.r.t. robot center at (0,0))
     */
-  LineRobotFootprint(const geometry_msgs::Point& line_start, const geometry_msgs::Point& line_end)
+  LineRobotFootprint(const Eigen::Vector3d& line_start, const Eigen::Vector3d& line_end)
   {
     setLine(line_start, line_end);
   }
@@ -417,12 +416,12 @@ public:
    * @brief Set vertices of the contour/footprint
    * @param vertices footprint vertices (only x and y) around the robot center (0,0) (do not repeat the first and last vertex at the end)
    */
-  void setLine(const geometry_msgs::Point& line_start, const geometry_msgs::Point& line_end)
+  void setLine(const Eigen::Vector3d& line_start, const Eigen::Vector3d& line_end)
   {
-    line_start_.x() = line_start.x; 
-    line_start_.y() = line_start.y; 
-    line_end_.x() = line_end.x;
-    line_end_.y() = line_end.y;
+    line_start_.x() = line_start.x(); 
+    line_start_.y() = line_start.y(); 
+    line_end_.x() = line_end.x();
+    line_end_.y() = line_end.y();
   }
   
   /**
@@ -473,29 +472,29 @@ public:
     * @param[out] markers container of marker messages describing the robot shape
     * @param color Color of the footprint
     */
-  virtual void visualizeRobot(const PoseSE2& current_pose, std::vector<visualization_msgs::Marker>& markers, const std_msgs::ColorRGBA& color) const
-  {   
-    markers.push_back(visualization_msgs::Marker());
-    visualization_msgs::Marker& marker = markers.back();
-    marker.type = visualization_msgs::Marker::LINE_STRIP;
-    current_pose.toPoseMsg(marker.pose); // all points are transformed into the robot frame!
-    
-    // line
-    geometry_msgs::Point line_start_world;
-    line_start_world.x = line_start_.x();
-    line_start_world.y = line_start_.y();
-    line_start_world.z = 0;
-    marker.points.push_back(line_start_world);
-    
-    geometry_msgs::Point line_end_world;
-    line_end_world.x = line_end_.x();
-    line_end_world.y = line_end_.y();
-    line_end_world.z = 0;
-    marker.points.push_back(line_end_world);
-
-    marker.scale.x = 0.05; 
-    marker.color = color;
-  }
+  //virtual void visualizeRobot(const PoseSE2& current_pose, std::vector<visualization_msgs::Marker>& markers, const std_msgs::ColorRGBA& color) const
+  //{   
+  //  markers.push_back(visualization_msgs::Marker());
+  //  visualization_msgs::Marker& marker = markers.back();
+  //  marker.type = visualization_msgs::Marker::LINE_STRIP;
+  //  current_pose.toPoseMsg(marker.pose); // all points are transformed into the robot frame!
+  //  
+  //  // line
+  //  geometry_msgs::Point line_start_world;
+  //  line_start_world.x = line_start_.x();
+  //  line_start_world.y = line_start_.y();
+  //  line_start_world.z = 0;
+  //  marker.points.push_back(line_start_world);
+  //  
+  //  geometry_msgs::Point line_end_world;
+  //  line_end_world.x = line_end_.x();
+  //  line_end_world.y = line_end_.y();
+  //  line_end_world.z = 0;
+  //  marker.points.push_back(line_end_world);
+  //
+  //  marker.scale.x = 0.05; 
+  //  marker.color = color;
+  //}
   
   /**
    * @brief Compute the inscribed radius of the footprint model
@@ -597,35 +596,35 @@ public:
     * @param[out] markers container of marker messages describing the robot shape
     * @param color Color of the footprint
     */
-  virtual void visualizeRobot(const PoseSE2& current_pose, std::vector<visualization_msgs::Marker>& markers, const std_msgs::ColorRGBA& color) const
-  {
-    if (vertices_.empty())
-      return;
-
-    markers.push_back(visualization_msgs::Marker());
-    visualization_msgs::Marker& marker = markers.back();
-    marker.type = visualization_msgs::Marker::LINE_STRIP;
-    current_pose.toPoseMsg(marker.pose); // all points are transformed into the robot frame!
-    
-    for (std::size_t i = 0; i < vertices_.size(); ++i)
-    {
-      geometry_msgs::Point point;
-      point.x = vertices_[i].x();
-      point.y = vertices_[i].y();
-      point.z = 0;
-      marker.points.push_back(point);
-    }
-    // add first point again in order to close the polygon
-    geometry_msgs::Point point;
-    point.x = vertices_.front().x();
-    point.y = vertices_.front().y();
-    point.z = 0;
-    marker.points.push_back(point);
-
-    marker.scale.x = 0.025; 
-    marker.color = color;
-
-  }
+  //virtual void visualizeRobot(const PoseSE2& current_pose, std::vector<visualization_msgs::Marker>& markers, const std_msgs::ColorRGBA& color) const
+  //{
+  //  if (vertices_.empty())
+  //    return;
+  //
+  //  markers.push_back(visualization_msgs::Marker());
+  //  visualization_msgs::Marker& marker = markers.back();
+  //  marker.type = visualization_msgs::Marker::LINE_STRIP;
+  //  current_pose.toPoseMsg(marker.pose); // all points are transformed into the robot frame!
+  //  
+  //  for (std::size_t i = 0; i < vertices_.size(); ++i)
+  //  {
+  //    geometry_msgs::Point point;
+  //    point.x = vertices_[i].x();
+  //    point.y = vertices_[i].y();
+  //    point.z = 0;
+  //    marker.points.push_back(point);
+  //  }
+  //  // add first point again in order to close the polygon
+  //  geometry_msgs::Point point;
+  //  point.x = vertices_.front().x();
+  //  point.y = vertices_.front().y();
+  //  point.z = 0;
+  //  marker.points.push_back(point);
+  //
+  //  marker.scale.x = 0.025; 
+  //  marker.color = color;
+  //
+  //}
   
   /**
    * @brief Compute the inscribed radius of the footprint model

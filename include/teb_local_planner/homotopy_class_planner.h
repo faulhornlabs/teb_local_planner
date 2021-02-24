@@ -48,12 +48,6 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include <visualization_msgs/Marker.h>
-#include <geometry_msgs/Point.h>
-#include <std_msgs/ColorRGBA.h>
-
-#include <ros/console.h>
-#include <ros/ros.h>
 
 #include <teb_local_planner/planner_interface.h>
 #include <teb_local_planner/teb_config.h>

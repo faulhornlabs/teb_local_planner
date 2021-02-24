@@ -39,16 +39,10 @@
 #ifndef TIMED_ELASTIC_BAND_H_
 #define TIMED_ELASTIC_BAND_H_
 
-#include <ros/ros.h>
-#include <ros/assert.h>
-
-#include <geometry_msgs/PoseStamped.h>
-#include <geometry_msgs/PoseArray.h>
-#include <tf/tf.h>
 
 #include <complex>
 #include <iterator>
-
+#include <boost/optional.hpp>
 #include <teb_local_planner/obstacles.h>
 
 // G2O Types
@@ -133,7 +127,7 @@ public:
    */
   double& TimeDiff(int index)
   {
-    ROS_ASSERT(index<sizeTimeDiffs()); 
+    assert(index<sizeTimeDiffs()); 
     return timediff_vec_.at(index)->dt();
   }
   
@@ -144,7 +138,7 @@ public:
    */
   const double& TimeDiff(int index) const
   {
-    ROS_ASSERT(index<sizeTimeDiffs()); 
+    assert(index<sizeTimeDiffs()); 
     return timediff_vec_.at(index)->dt();
   }
   
@@ -155,7 +149,7 @@ public:
    */
   PoseSE2& Pose(int index) 
   {
-    ROS_ASSERT(index<sizePoses());
+    assert(index<sizePoses());
     return pose_vec_.at(index)->pose();
   }
   
@@ -166,7 +160,7 @@ public:
    */
   const PoseSE2& Pose(int index) const 
   {
-    ROS_ASSERT(index<sizePoses());
+    assert(index<sizePoses());
     return pose_vec_.at(index)->pose();
   }
   
@@ -197,7 +191,7 @@ public:
    */ 
   VertexPose* PoseVertex(int index) 
   {
-    ROS_ASSERT(index<sizePoses());
+    assert(index<sizePoses());
     return pose_vec_.at(index);
   }
   
@@ -208,7 +202,7 @@ public:
    */  
   VertexTimeDiff* TimeDiffVertex(int index) 
   {
-    ROS_ASSERT(index<sizeTimeDiffs()); 
+    assert(index<sizeTimeDiffs()); 
     return timediff_vec_.at(index);
   }
   
@@ -424,33 +418,8 @@ public:
    * @param guess_backwards_motion Allow the initialization of backwards oriented trajectories if the goal heading is pointing behind the robot (this parameter is used only if \c estimate_orient is enabled.
    * @return true if everything was fine, false otherwise
    */
-  bool initTrajectoryToGoal(const std::vector<geometry_msgs::PoseStamped>& plan, double max_vel_x, double max_vel_theta, bool estimate_orient=false, int min_samples = 3, bool guess_backwards_motion = false);
-
-
-  ROS_DEPRECATED bool initTEBtoGoal(const PoseSE2& start, const PoseSE2& goal, double diststep=0, double timestep=1, int min_samples = 3, bool guess_backwards_motion = false)
-  {
-    ROS_WARN_ONCE("initTEBtoGoal is deprecated and has been replaced by initTrajectoryToGoal. The signature has changed: timestep has been replaced by max_vel_x. \
-                   this deprecated method sets max_vel_x = 1. Please update your code.");
-    return initTrajectoryToGoal(start, goal, diststep, timestep, min_samples, guess_backwards_motion);
-  }
-
-  template<typename BidirIter, typename Fun>
-  ROS_DEPRECATED bool initTEBtoGoal(BidirIter path_start, BidirIter path_end, Fun fun_position, double max_vel_x, double max_vel_theta,
-          boost::optional<double> max_acc_x, boost::optional<double> max_acc_theta,
-          boost::optional<double> start_orientation, boost::optional<double> goal_orientation, int min_samples = 3, bool guess_backwards_motion = false)
-  {
-    return initTrajectoryToGoal<BidirIter, Fun>(path_start, path_end, fun_position, max_vel_x, max_vel_theta,
-                                                max_acc_x, max_acc_theta, start_orientation, goal_orientation, min_samples, guess_backwards_motion);
-  }
-
-  ROS_DEPRECATED bool initTEBtoGoal(const std::vector<geometry_msgs::PoseStamped>& plan, double dt, bool estimate_orient=false, int min_samples = 3, bool guess_backwards_motion = false)
-  {
-    ROS_WARN_ONCE("initTEBtoGoal is deprecated and has been replaced by initTrajectoryToGoal. The signature has changed: dt has been replaced by max_vel_x. \
-                   this deprecated method sets max_vel = 1. Please update your code.");
-    return initTrajectoryToGoal(plan, 1.0, 1.0, estimate_orient, min_samples, guess_backwards_motion);
-  }
-
-  
+  bool initTrajectoryToGoal(const std::vector<Eigen::Matrix4f>& plan, double max_vel_x, double max_vel_theta, bool estimate_orient=false, int min_samples = 3, bool guess_backwards_motion = false);
+ 
   //@}
   
   /** @name Update and modify the trajectory */

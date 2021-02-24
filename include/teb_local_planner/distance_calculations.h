@@ -41,7 +41,7 @@
 
 #include <Eigen/Core>
 #include <teb_local_planner/misc.h>
-
+#include <array>
 
 namespace teb_local_planner
 {

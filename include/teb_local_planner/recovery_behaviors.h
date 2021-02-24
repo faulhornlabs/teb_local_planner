@@ -41,8 +41,7 @@
 
 
 #include <boost/circular_buffer.hpp>
-#include <geometry_msgs/Twist.h>
-#include <ros/ros.h>
+#include <teb_local_planner/missing_types.h>
 
 namespace teb_local_planner
 {
@@ -84,7 +83,7 @@ public:
    * @param v_eps Threshold for the average normalized linear velocity in (0,1) that must not be exceded (e.g. 0.1)
    * @param omega_eps Threshold for the average normalized angular velocity in (0,1) that must not be exceded (e.g. 0.1)
    */
-  void update(const geometry_msgs::Twist& twist, double v_max, double v_backwards_max, double omega_max, double v_eps, double omega_eps);
+  void update(const Twist& twist, double v_max, double v_backwards_max, double omega_max, double v_eps, double omega_eps);
   
   /**
    * @brief Check if the robot got stucked

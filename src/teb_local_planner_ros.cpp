@@ -38,16 +38,8 @@
 
 #include <teb_local_planner/teb_local_planner_ros.h>
 
-#include <tf2_eigen/tf2_eigen.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include <boost/algorithm/string.hpp>
-
-// MBF return codes
-#include <mbf_msgs/ExePathResult.h>
-
-// pluginlib macros
-#include <pluginlib/class_list_macros.h>
 
 #include "g2o/core/sparse_optimizer.h"
 #include "g2o/core/block_solver.h"
@@ -58,18 +50,22 @@
 #include "g2o/solvers/cholmod/linear_solver_cholmod.h"
 
 
-// register this planner both as a BaseLocalPlanner and as a MBF's CostmapController plugin
-PLUGINLIB_EXPORT_CLASS(teb_local_planner::TebLocalPlannerROS, nav_core::BaseLocalPlanner)
-PLUGINLIB_EXPORT_CLASS(teb_local_planner::TebLocalPlannerROS, mbf_costmap_core::CostmapController)
-
 namespace teb_local_planner
 {
   
 
-TebLocalPlannerROS::TebLocalPlannerROS() : costmap_ros_(NULL), tf_(NULL), costmap_model_(NULL),
-                                           costmap_converter_loader_("costmap_converter", "costmap_converter::BaseCostmapToPolygons"),
-                                           dynamic_recfg_(NULL), custom_via_points_active_(false), goal_reached_(false), no_infeasible_plans_(0),
-                                           last_preferred_rotdir_(RotType::none), initialized_(false)
+TebLocalPlannerROS::TebLocalPlannerROS()
+    : //costmap_ros_(NULL)
+    //, tf_(NULL)
+    //, costmap_model_(NULL)
+    //, costmap_converter_loader_("costmap_converter", "costmap_converter::BaseCostmapToPolygons")
+    //, dynamic_recfg_(NULL)
+    //, custom_via_points_active_(false)
+    //,
+      goal_reached_(false)
+    , no_infeasible_plans_(0)
+    , last_preferred_rotdir_(RotType::none)
+    , initialized_(false)
 {
 }
 
@@ -78,14 +74,14 @@ TebLocalPlannerROS::~TebLocalPlannerROS()
 {
 }
 
-void TebLocalPlannerROS::reconfigureCB(TebLocalPlannerReconfigureConfig& config, uint32_t level)
-{
-  cfg_.reconfigure(config);
-  ros::NodeHandle nh("~/" + name_);
-  // create robot footprint/contour model for optimization
-  RobotFootprintModelPtr robot_model = getRobotFootprintFromParamServer(nh);
-  planner_->updateRobotModel(robot_model);
-}
+//void TebLocalPlannerROS::reconfigureCB(TebLocalPlannerReconfigureConfig& config, uint32_t level)
+//{
+//  cfg_.reconfigure(config);
+//  ros::NodeHandle nh("~/" + name_);
+//  // create robot footprint/contour model for optimization
+//  RobotFootprintModelPtr robot_model = getRobotFootprintFromParamServer(nh);
+//  planner_->updateRobotModel(robot_model);
+//}
 
 void TebLocalPlannerROS::initialize(std::string name, tf2_ros::Buffer* tf, costmap_2d::Costmap2DROS* costmap_ros)
 {

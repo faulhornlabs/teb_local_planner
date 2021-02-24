@@ -49,11 +49,11 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/pointer_cast.hpp>
 
-#include <geometry_msgs/Polygon.h>
-#include <geometry_msgs/TwistWithCovariance.h>
-#include <geometry_msgs/QuaternionStamped.h>
+//#include <geometry_msgs/Polygon.h>
+//#include <geometry_msgs/TwistWithCovariance.h>
+//#include <geometry_msgs/QuaternionStamped.h>
 
-#include <tf/tf.h>
+//#include <tf/tf.h>
 #include <teb_local_planner/distance_calculations.h>
 
 
@@ -211,13 +211,13 @@ public:
     * @param velocity geometry_msgs::TwistWithCovariance containing the velocity of the obstacle
     * @param orientation geometry_msgs::QuaternionStamped containing the orientation of the obstacle
     */
-  void setCentroidVelocity(const geometry_msgs::TwistWithCovariance& velocity,
-                           const geometry_msgs::Quaternion& orientation)
+  void setCentroidVelocity(const Eigen::Vector2d& velocity,
+                           const Eigen::Quaterniond& orientation)
   {
     // Set velocity, if obstacle is moving
     Eigen::Vector2d vel;
-    vel.coeffRef(0) = velocity.twist.linear.x;
-    vel.coeffRef(1) = velocity.twist.linear.y;
+    vel.coeffRef(0) = velocity.x();
+    vel.coeffRef(1) = velocity.y();
 
     // If norm of velocity is less than 0.001, consider obstacle as not dynamic
     // TODO: Get rid of constant
@@ -232,11 +232,6 @@ public:
     setCentroidVelocity(vel);
   }
 
-  void setCentroidVelocity(const geometry_msgs::TwistWithCovariance& velocity,
-                           const geometry_msgs::QuaternionStamped& orientation)
-  {
-    setCentroidVelocity(velocity, orientation.quaternion);
-  }
 
   /**
     * @brief Get the obstacle velocity (vx, vy) (w.r.t. to the centroid)
@@ -259,19 +254,19 @@ public:
    * and polygons might are implictly closed such that the start vertex must not be repeated.
    * @param[out] polygon the polygon message
    */
-  virtual void toPolygonMsg(geometry_msgs::Polygon& polygon) = 0;
+  virtual void toPolygonMsg(std::vector<Eigen::Vector3f>& polygon) = 0;
 
-  virtual void toTwistWithCovarianceMsg(geometry_msgs::TwistWithCovariance& twistWithCovariance)
+  virtual void toTwistWithCovarianceMsg(Eigen::Vector2d& twistWithCovariance)
   {
     if (dynamic_)
     {
-      twistWithCovariance.twist.linear.x = centroid_velocity_(0);
-      twistWithCovariance.twist.linear.y = centroid_velocity_(1);
+      twistWithCovariance.x() = centroid_velocity_(0);
+      twistWithCovariance.y() = centroid_velocity_(1);
     }
     else
     {
-      twistWithCovariance.twist.linear.x = 0;
-      twistWithCovariance.twist.linear.y = 0;
+      twistWithCovariance.x() = 0;
+      twistWithCovariance.y() = 0;
     }
 
     // TODO:Covariance
@@ -423,12 +418,12 @@ public:
   const double& y() const {return pos_.coeffRef(1);} //!< Return the current y-coordinate of the obstacle (read-only)
       
   // implements toPolygonMsg() of the base class
-  virtual void toPolygonMsg(geometry_msgs::Polygon& polygon)
+  virtual void toPolygonMsg(std::vector<Eigen::Vector3f>& polygon)
   {
-    polygon.points.resize(1);
-    polygon.points.front().x = pos_.x();
-    polygon.points.front().y = pos_.y();
-    polygon.points.front().z = 0;
+    polygon.resize(1);
+    polygon.front().x() = pos_.x();
+    polygon.front().y() = pos_.y();
+    polygon.front().z() = 0;
   }
       
 protected:
@@ -569,14 +564,14 @@ public:
   const double& radius() const {return radius_;} //!< Return the current radius of the obstacle
 
   // implements toPolygonMsg() of the base class
-  virtual void toPolygonMsg(geometry_msgs::Polygon& polygon)
+  virtual void toPolygonMsg(std::vector<Eigen::Vector3f>& polygon)
   {
     // TODO(roesmann): the polygon message type cannot describe a "perfect" circle
     //                 We could switch to ObstacleMsg if required somewhere...
-    polygon.points.resize(1);
-    polygon.points.front().x = pos_.x();
-    polygon.points.front().y = pos_.y();
-    polygon.points.front().z = 0;
+    polygon.resize(1);
+    polygon.front().x() = pos_.x();
+    polygon.front().y() = pos_.y();
+    polygon.front().z() = 0;
   }
 
 protected:
@@ -713,15 +708,15 @@ public:
   void setEnd(const Eigen::Ref<const Eigen::Vector2d>& end) {end_ = end; calcCentroid();}
   
   // implements toPolygonMsg() of the base class
-  virtual void toPolygonMsg(geometry_msgs::Polygon& polygon)
+  virtual void toPolygonMsg(std::vector<Eigen::Vector3f>& polygon)
   {
-    polygon.points.resize(2);
-    polygon.points.front().x = start_.x();
-    polygon.points.front().y = start_.y();
+    polygon.resize(2);
+    polygon.front().x() = start_.x();
+    polygon.front().y() = start_.y();
     
-    polygon.points.back().x = end_.x();
-    polygon.points.back().y = end_.y();
-    polygon.points.back().z = polygon.points.front().z = 0;
+    polygon.back().x() = end_.x();
+    polygon.back().y() = end_.y();
+    polygon.back().z() = polygon.front().z() = 0;
   }
   
 protected:
@@ -861,17 +856,17 @@ public:
   void setEnd(const Eigen::Ref<const Eigen::Vector2d>& end) {end_ = end; calcCentroid();}
 
   // implements toPolygonMsg() of the base class
-  virtual void toPolygonMsg(geometry_msgs::Polygon& polygon)
+  virtual void toPolygonMsg(std::vector<Eigen::Vector3f>& polygon)
   {
     // Currently, we only export the line
     // TODO(roesmann): export whole pill
-    polygon.points.resize(2);
-    polygon.points.front().x = start_.x();
-    polygon.points.front().y = start_.y();
+    polygon.resize(2);
+    polygon.front().x() = start_.x();
+    polygon.front().y() = start_.y();
 
-    polygon.points.back().x = end_.x();
-    polygon.points.back().y = end_.y();
-    polygon.points.back().z = polygon.points.front().z = 0;
+    polygon.back().x() = end_.x();
+    polygon.back().y() = end_.y();
+    polygon.back().z() = polygon.front().z() = 0;
   }
 
 protected:
@@ -1035,7 +1030,7 @@ public:
   }
   
   // implements toPolygonMsg() of the base class
-  virtual void toPolygonMsg(geometry_msgs::Polygon& polygon);
+  virtual void toPolygonMsg(std::vector<Eigen::Vector3f>& polygon);
 
   
   /** @name Define the polygon */

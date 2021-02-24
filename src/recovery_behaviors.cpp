@@ -37,7 +37,6 @@
  *********************************************************************/
 
 #include <teb_local_planner/recovery_behaviors.h>
-#include <ros/ros.h>
 #include <limits>
 #include <functional>
 #include <numeric>
@@ -48,14 +47,14 @@ namespace teb_local_planner
 
 // ============== FailureDetector Implementation ===================
 
-void FailureDetector::update(const geometry_msgs::Twist& twist, double v_max, double v_backwards_max, double omega_max, double v_eps, double omega_eps)
+void FailureDetector::update(const Twist& twist, double v_max, double v_backwards_max, double omega_max, double v_eps, double omega_eps)
 {
     if (buffer_.capacity() == 0)
         return;
     
     VelMeasurement measurement;
-    measurement.v = twist.linear.x; // just consider linear velocity in x-direction in the robot frame for now
-    measurement.omega = twist.angular.z;
+    measurement.v = twist.linear.x(); // just consider linear velocity in x-direction in the robot frame for now
+    measurement.omega = twist.angular.z();
     
     if (measurement.v > 0 && v_max>0)
         measurement.v /= v_max;

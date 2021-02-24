@@ -60,12 +60,12 @@
 #include <g2o/solvers/cholmod/linear_solver_cholmod.h>
 
 // messages
-#include <nav_msgs/Path.h>
-#include <geometry_msgs/PoseStamped.h>
-#include <tf/transform_datatypes.h>
-#include <teb_local_planner/TrajectoryMsg.h>
-
-#include <nav_msgs/Odometry.h>
+//#include <nav_msgs/Path.h>
+//#include <geometry_msgs/PoseStamped.h>
+//#include <tf/transform_datatypes.h>
+//#include <teb_local_planner/TrajectoryMsg.h>
+//
+//#include <nav_msgs/Odometry.h>
 #include <limits.h>
 
 namespace teb_local_planner

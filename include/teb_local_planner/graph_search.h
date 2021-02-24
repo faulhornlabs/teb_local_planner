@@ -57,8 +57,6 @@
 
 #include <Eigen/Core>
 
-#include <geometry_msgs/Twist.h>
-
 #include <teb_local_planner/equivalence_relations.h>
 #include <teb_local_planner/pose_se2.h>
 #include <teb_local_planner/teb_config.h>
@@ -108,7 +106,8 @@ class GraphSearchInterface
 {
 public:
 
-  virtual void createGraph(const PoseSE2& start, const PoseSE2& goal, double dist_to_obst, double obstacle_heading_threshold, const geometry_msgs::Twist* start_velocity) = 0;
+  virtual void createGraph(const PoseSE2& start, const PoseSE2& goal, double dist_to_obst, double obstacle_heading_threshold,
+      const Eigen::Matrix<double, 6, 1>* start_velocity) = 0;
 
   /**
    * @brief Clear any existing graph of the homotopy class search

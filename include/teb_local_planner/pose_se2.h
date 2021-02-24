@@ -43,8 +43,6 @@
 
 #include <Eigen/Core>
 #include <teb_local_planner/misc.h>
-#include <geometry_msgs/Pose.h>
-#include <tf/transform_datatypes.h>
 
 namespace teb_local_planner
 {
@@ -97,23 +95,23 @@ public:
    * @brief Construct pose using a geometry_msgs::Pose
    * @param pose geometry_msgs::Pose object
    */ 
-  PoseSE2(const geometry_msgs::Pose& pose)
-  {
-      _position.coeffRef(0) = pose.position.x;
-      _position.coeffRef(1) = pose.position.y;
-      _theta = tf::getYaw( pose.orientation );
-  }
+//  PoseSE2(const geometry_msgs::Pose& pose)
+//  {
+//      _position.coeffRef(0) = pose.position.x;
+//      _position.coeffRef(1) = pose.position.y;
+//      _theta = tf::getYaw( pose.orientation );
+//  }
   
   /**
    * @brief Construct pose using a tf::Pose
    * @param pose tf::Pose object
    */ 
-  PoseSE2(const tf::Pose& pose)
-  {
-      _position.coeffRef(0) = pose.getOrigin().getX();
-      _position.coeffRef(1) = pose.getOrigin().getY();
-      _theta = tf::getYaw( pose.getRotation() );
-  }
+//  PoseSE2(const tf::Pose& pose)
+//  {
+//      _position.coeffRef(0) = pose.getOrigin().getX();
+//      _position.coeffRef(1) = pose.getOrigin().getY();
+//      _theta = tf::getYaw( pose.getRotation() );
+//  }
   
   /**
     * @brief Copy constructor
@@ -200,13 +198,13 @@ public:
    * @brief Convert PoseSE2 to a geometry_msgs::Pose
    * @param[out] pose Pose message
    */
-  void toPoseMsg(geometry_msgs::Pose& pose) const
-  {
-    pose.position.x = _position.x();
-    pose.position.y = _position.y();
-    pose.position.z = 0;
-    pose.orientation = tf::createQuaternionMsgFromYaw(_theta);
-  }
+//  void toPoseMsg(geometry_msgs::Pose& pose) const
+//  {
+//    pose.position.x = _position.x();
+//    pose.position.y = _position.y();
+//    pose.position.z = 0;
+//    pose.orientation = tf::createQuaternionMsgFromYaw(_theta);
+//  }
   
   /**
    * @brief Return the unit vector of the current orientation
