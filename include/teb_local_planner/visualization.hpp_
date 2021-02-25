@@ -83,24 +83,24 @@ void TebVisualization::publishGraph(const GraphType& graph, const std::string& n
     marker.points.push_back(point_start2);
 
 #else
-    geometry_msgs::Point point_start;
-    point_start.x = graph[boost::source(*it_edge,graph)].pos[0];
-    point_start.y = graph[boost::source(*it_edge,graph)].pos[1];
-    point_start.z = 0;
+    Eigen::Vector3d point_start;
+    point_start.x() = graph[boost::source(*it_edge,graph)].pos[0];
+    point_start.y() = graph[boost::source(*it_edge,graph)].pos[1];
+    point_start.z() = 0;
     marker.points.push_back(point_start);
 #endif
-    geometry_msgs::Point point_end;
-    point_end.x = graph[boost::target(*it_edge,graph)].pos[0];
-    point_end.y = graph[boost::target(*it_edge,graph)].pos[1];
-    point_end.z = 0;
+    Eigen::Vector3d point_end;
+    point_end.x() = graph[boost::target(*it_edge,graph)].pos[0];
+    point_end.y() = graph[boost::target(*it_edge,graph)].pos[1];
+    point_end.z() = 0;
     marker.points.push_back(point_end);
     
     // add color
-    std_msgs::ColorRGBA color;
-    color.a = 1.0;
-    color.r = 0;
-    color.g = 0;
-    color.b = 1;
+    Eigen::Vector4f color;
+    color.x() = 1.0;
+    color.y() = 0;
+    color.z() = 0;
+    color.w() = 1;
     marker.colors.push_back(color);
     marker.colors.push_back(color);
 #ifdef TRIANGLE
@@ -134,20 +134,20 @@ void TebVisualization::publishGraph(const GraphType& graph, const std::string& n
   GraphVertexIterator it_vert, end_vert;
   for (boost::tie(it_vert,end_vert) = boost::vertices(graph); it_vert!=end_vert; ++it_vert)
   {
-    geometry_msgs::Point point;
-    point.x = graph[*it_vert].pos[0];
-    point.y = graph[*it_vert].pos[1];
-    point.z = 0;
+    Eigen::Vector3d point;
+    point.x() = graph[*it_vert].pos[0];
+    point.y() = graph[*it_vert].pos[1];
+    point.z() = 0;
     marker.points.push_back(point);
     // add color
     
-    std_msgs::ColorRGBA color;
+    Eigen::Vector4f color;
     color.a = 1.0;
     if (it_vert==end_vert-1)
     {
-      color.r = 1;
-      color.g = 0;
-      color.b = 0;		
+      color.x() = 1;
+      color.y() = 0;
+      color.z() = 0;		
     }
     else
     {

@@ -38,12 +38,13 @@
 
 #include <teb_local_planner/graph_search.h>
 #include <teb_local_planner/homotopy_class_planner.h>
+#include <boost/bind.hpp>
 
 namespace teb_local_planner
 {
 
 void GraphSearchInterface::DepthFirst(HcGraph& g, std::vector<HcGraphVertexType>& visited, const HcGraphVertexType& goal, double start_orientation,
-                                      double goal_orientation, const geometry_msgs::Twist* start_velocity)
+                                      double goal_orientation, const Twist* start_velocity)
 {
   // see http://www.technical-recipes.com/2011/a-recursive-algorithm-to-find-all-paths-between-two-given-nodes/ for details on finding all simple paths
 
@@ -90,7 +91,7 @@ void GraphSearchInterface::DepthFirst(HcGraph& g, std::vector<HcGraphVertexType>
 
 
 
-void lrKeyPointGraph::createGraph(const PoseSE2& start, const PoseSE2& goal, double dist_to_obst, double obstacle_heading_threshold, const geometry_msgs::Twist* start_velocity)
+void lrKeyPointGraph::createGraph(const PoseSE2& start, const PoseSE2& goal, double dist_to_obst, double obstacle_heading_threshold, const Twist* start_velocity)
 {
   // Clear existing graph and paths
   clearGraph();
@@ -101,10 +102,10 @@ void lrKeyPointGraph::createGraph(const PoseSE2& start, const PoseSE2& goal, dou
 
   if (diff.norm()<cfg_->goal_tolerance.xy_goal_tolerance)
   {
-    ROS_DEBUG("HomotopyClassPlanner::createProbRoadmapGraph(): xy-goal-tolerance already reached.");
+      std::cout << ("HomotopyClassPlanner::createProbRoadmapGraph(): xy-goal-tolerance already reached.") << std::endl;
     if (hcp_->getTrajectoryContainer().empty())
     {
-      ROS_INFO("HomotopyClassPlanner::createProbRoadmapGraph(): Initializing a small straight line to just correct orientation errors.");
+        std::cout << ("HomotopyClassPlanner::createProbRoadmapGraph(): Initializing a small straight line to just correct orientation errors.") << std::endl;
       hcp_->addAndInitNewTeb(start, goal, start_velocity);
     }
     return;
@@ -180,7 +181,7 @@ void lrKeyPointGraph::createGraph(const PoseSE2& start, const PoseSE2& goal, dou
           // check angle
           if (start_orient_vec.dot(keypoint_dist) <= obstacle_heading_threshold)
           {
-            ROS_DEBUG("createGraph() - deleted edge: limit_obstacle_heading");
+            std::cout << ("createGraph() - deleted edge: limit_obstacle_heading") << std::endl;
             continue;
           }
         }
@@ -217,7 +218,7 @@ void lrKeyPointGraph::createGraph(const PoseSE2& start, const PoseSE2& goal, dou
 
 
 
-void ProbRoadmapGraph::createGraph(const PoseSE2& start, const PoseSE2& goal, double dist_to_obst, double obstacle_heading_threshold, const geometry_msgs::Twist* start_velocity)
+void ProbRoadmapGraph::createGraph(const PoseSE2& start, const PoseSE2& goal, double dist_to_obst, double obstacle_heading_threshold, const Twist* start_velocity)
 {
   // Clear existing graph and paths
   clearGraph();
@@ -229,10 +230,10 @@ void ProbRoadmapGraph::createGraph(const PoseSE2& start, const PoseSE2& goal, do
 
   if (start_goal_dist<cfg_->goal_tolerance.xy_goal_tolerance)
   {
-    ROS_DEBUG("HomotopyClassPlanner::createProbRoadmapGraph(): xy-goal-tolerance already reached.");
+      std::cout << ("HomotopyClassPlanner::createProbRoadmapGraph(): xy-goal-tolerance already reached.") <<  std::endl;
     if (hcp_->getTrajectoryContainer().empty())
     {
-      ROS_INFO("HomotopyClassPlanner::createProbRoadmapGraph(): Initializing a small straight line to just correct orientation errors.");
+        std::cout << ("HomotopyClassPlanner::createProbRoadmapGraph(): Initializing a small straight line to just correct orientation errors.");
       hcp_->addAndInitNewTeb(start, goal, start_velocity);
     }
     return;

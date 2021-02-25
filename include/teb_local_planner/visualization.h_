@@ -46,9 +46,6 @@
 #include <teb_local_planner/timed_elastic_band.h>
 #include <teb_local_planner/robot_footprint_model.h>
 
-// ros stuff
-#include <ros/publisher.h>
-#include <base_local_planner/goal_functions.h>
 
 // boost
 #include <boost/graph/adjacency_list.hpp>
@@ -56,16 +53,6 @@
 
 // std
 #include <iterator>
-
-// messages
-#include <nav_msgs/Path.h>
-#include <geometry_msgs/PoseStamped.h>
-#include <geometry_msgs/PoseArray.h>
-#include <std_msgs/ColorRGBA.h>
-#include <tf/transform_datatypes.h>
-#include <nav_msgs/Odometry.h>
-#include <nav_msgs/Path.h>
-#include <visualization_msgs/Marker.h>
 
 namespace teb_local_planner
 {
@@ -92,7 +79,7 @@ public:
    * @param nh local ros::NodeHandle
    * @param cfg const reference to the TebConfig class for parameters
    */
-  TebVisualization(ros::NodeHandle& nh, const TebConfig& cfg);
+  //TebVisualization(ros::NodeHandle& nh, const TebConfig& cfg);
   
   /**
    * @brief Initializes the class and registers topics.
@@ -101,7 +88,7 @@ public:
    * @param nh local ros::NodeHandle
    * @param cfg const reference to the TebConfig class for parameters
    */
-  void initialize(ros::NodeHandle& nh, const TebConfig& cfg);
+  //void initialize(ros::NodeHandle& nh, const TebConfig& cfg);
   
   
   /** @name Publish to topics */
@@ -111,13 +98,13 @@ public:
    * @brief Publish a given global plan to the ros topic \e ../../global_plan
    * @param global_plan Pose array describing the global plan
    */
-  void publishGlobalPlan(const std::vector<geometry_msgs::PoseStamped>& global_plan) const;
+  void publishGlobalPlan(const std::vector<Eigen::Matrix4f>& global_plan) const;
   
   /**
    * @brief Publish a given local plan to the ros topic \e ../../local_plan
    * @param local_plan Pose array describing the local plan
    */
-  void publishLocalPlan(const std::vector<geometry_msgs::PoseStamped>& local_plan) const;
+  void publishLocalPlan(const std::vector<Eigen::Matrix4f>& local_plan) const;
   
   /**
    * @brief Publish Timed_Elastic_Band related stuff (local plan, pose sequence).
@@ -137,7 +124,7 @@ public:
    * @param color Color of the footprint
    */
   void publishRobotFootprintModel(const PoseSE2& current_pose, const BaseRobotFootprintModel& robot_model, const std::string& ns = "RobotFootprintModel",
-                                  const std_msgs::ColorRGBA& color = toColorMsg(0.5, 0.0, 0.8, 0.0));
+                                  const Eigen::Vector4f& color = toColorMsg(0.5, 0.0, 0.8, 0.0));
 
   /**
    * @brief Publish the robot footprints related to infeasible poses
@@ -240,7 +227,7 @@ public:
    * @param b Blue value
    * @return Color message
    */
-  static std_msgs::ColorRGBA toColorMsg(double a, double r, double g, double b);
+  static Eigen::Vector4f toColorMsg(double a, double r, double g, double b);
   
 protected:
   
@@ -250,11 +237,11 @@ protected:
    */
   bool printErrorWhenNotInitialized() const;
 
-  ros::Publisher global_plan_pub_; //!< Publisher for the global plan
-  ros::Publisher local_plan_pub_; //!< Publisher for the local plan
-  ros::Publisher teb_poses_pub_; //!< Publisher for the trajectory pose sequence
-  ros::Publisher teb_marker_pub_; //!< Publisher for visualization markers
-  ros::Publisher feedback_pub_; //!< Publisher for the feedback message for analysis and debug purposes
+  //ros::Publisher global_plan_pub_; //!< Publisher for the global plan
+  //ros::Publisher local_plan_pub_; //!< Publisher for the local plan
+  //ros::Publisher teb_poses_pub_; //!< Publisher for the trajectory pose sequence
+  //ros::Publisher teb_marker_pub_; //!< Publisher for visualization markers
+  //ros::Publisher feedback_pub_; //!< Publisher for the feedback message for analysis and debug purposes
   
   const TebConfig* cfg_; //!< Config class that stores and manages all related parameters
   

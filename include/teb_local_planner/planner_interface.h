@@ -42,19 +42,11 @@
 // boost
 #include <boost/shared_ptr.hpp>
 
-// ros
-#include <tf/transform_datatypes.h>
-#include <base_local_planner/costmap_model.h>
-
 // this package
 #include <teb_local_planner/pose_se2.h>
 #include <teb_local_planner/robot_footprint_model.h>
-
-// messages
-#include <geometry_msgs/PoseArray.h>
-#include <geometry_msgs/PoseStamped.h>
-#include <geometry_msgs/TwistStamped.h>
-
+#include <teb_local_planner/missing_types.h>
+#include <iostream>
 
 namespace teb_local_planner
 {
@@ -96,7 +88,7 @@ public:
    *        otherwise the final velocity will be zero (default: false)
    * @return \c true if planning was successful, \c false otherwise
    */
-  virtual bool plan(const std::vector<geometry_msgs::PoseStamped>& initial_plan, const geometry_msgs::Twist* start_vel = NULL, bool free_goal_vel=false) = 0;
+  virtual bool plan(const std::vector<Eigen::Matrix4f>& initial_plan, const Twist* start_vel = NULL, bool free_goal_vel=false) = 0;
   
   /**
    * @brief Plan a trajectory between a given start and goal pose (tf::Pose version).
@@ -109,7 +101,7 @@ public:
    *        otherwise the final velocity will be zero (default: false)
    * @return \c true if planning was successful, \c false otherwise
    */
-  virtual bool plan(const tf::Pose& start, const tf::Pose& goal, const geometry_msgs::Twist* start_vel = NULL, bool free_goal_vel=false) = 0;
+  virtual bool plan(const Eigen::Matrix4f& start, const Eigen::Matrix4f& goal, const Twist* start_vel = NULL, bool free_goal_vel=false) = 0;
   
   /**
    * @brief Plan a trajectory between a given start and goal pose.
@@ -122,7 +114,7 @@ public:
    *        otherwise the final velocity will be zero (default: false)
    * @return \c true if planning was successful, \c false otherwise
    */
-  virtual bool plan(const PoseSE2& start, const PoseSE2& goal, const geometry_msgs::Twist* start_vel = NULL, bool free_goal_vel=false) = 0;
+  virtual bool plan(const PoseSE2& start, const PoseSE2& goal, const Twist* start_vel = NULL, bool free_goal_vel=false) = 0;
   
   /**
    * @brief Get the velocity command from a previously optimized plan to control the robot at the current sampling interval.
@@ -151,7 +143,7 @@ public:
    * Initial means that the penalty is applied only to the first few poses of the trajectory.
    * @param dir This parameter might be RotType::left (prefer left), RotType::right (prefer right) or RotType::none (prefer none)
    */
-  virtual void setPreferredTurningDir(RotType dir) {ROS_WARN("setPreferredTurningDir() not implemented for this planner.");}
+  virtual void setPreferredTurningDir(RotType dir) {std::cout << ("setPreferredTurningDir() not implemented for this planner.") << std::endl;}
     
   /**
    * @brief Visualize planner specific stuff.
@@ -178,7 +170,7 @@ public:
    * @return \c true, if the robot footprint along the first part of the trajectory intersects with 
    *         any obstacle in the costmap, \c false otherwise.
    */
-  virtual bool isTrajectoryFeasible(base_local_planner::CostmapModel* costmap_model, const std::vector<geometry_msgs::Point>& footprint_spec,
+  virtual bool isTrajectoryFeasible(Costmap2D * costmap_model, const std::vector<Eigen::Vector3d>& footprint_spec,
         double inscribed_radius = 0.0, double circumscribed_radius=0.0, int look_ahead_idx=-1) = 0;
     
   /**

@@ -45,13 +45,12 @@
 #include <teb_local_planner/teb_config.h>
 #include <teb_local_planner/timed_elastic_band.h>
 
-#include <ros/ros.h>
 #include <math.h>
 #include <algorithm>
 #include <functional>
 #include <vector>
 #include <iterator>
-
+#include <boost/math/special_functions/sign.hpp>
 
 namespace teb_local_planner
 {
@@ -103,7 +102,7 @@ public:
         }
 
 
-        ROS_ASSERT_MSG(cfg_->hcp.h_signature_prescaler>0.1 && cfg_->hcp.h_signature_prescaler<=1, "Only a prescaler on the interval (0.1,1] ist allowed.");
+        TEB_ASSERT_MSG(cfg_->hcp.h_signature_prescaler>0.1 && cfg_->hcp.h_signature_prescaler<=1, "Only a prescaler on the interval (0.1,1] ist allowed.");
 
         // guess values for f0
         // paper proposes a+b=N-1 && |a-b|<=1, 1...N obstacles
@@ -203,7 +202,7 @@ public:
                 return true; // Found! Homotopy class already exists, therefore nothing added
         }
         else
-            ROS_ERROR("Cannot compare HSignature equivalence classes with types other than HSignature.");
+            std::cout << ("Cannot compare HSignature equivalence classes with types other than HSignature.") << std::endl;
 
         return false;
     }
@@ -316,7 +315,7 @@ public:
           else // otherwise use the time information from the teb trajectory
           {
             if (std::distance(path_iter, path_end) != std::distance(timediff_iter, timediff_end.get()))
-              ROS_ERROR("Size of poses and timediff vectors does not match. This is a bug.");
+              std::cout <<("Size of poses and timediff vectors does not match. This is a bug.") << std::endl;
             next_transition_time += (*timediff_iter)->dt();
           }
 
@@ -377,7 +376,7 @@ public:
         }
       }
       else
-          ROS_ERROR("Cannot compare HSignature3d equivalence classes with types other than HSignature3d.");
+          std::cout << ("Cannot compare HSignature3d equivalence classes with types other than HSignature3d.") << std::endl;
 
       return false;
     }

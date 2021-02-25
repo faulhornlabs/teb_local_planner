@@ -46,12 +46,13 @@
 
 #include <float.h>
 
-#include <base_local_planner/BaseLocalPlannerConfig.h>
+//#include <base_local_planner/BaseLocalPlannerConfig.h>
 
 #include <teb_local_planner/g2o_types/vertex_timediff.h>
 #include <teb_local_planner/g2o_types/base_teb_edges.h>
 #include <teb_local_planner/g2o_types/penalties.h>
 #include <teb_local_planner/teb_config.h>
+#include <teb_local_planner/teb_assert.h>
 
 #include <Eigen/Core>
 
@@ -87,12 +88,12 @@ public:
    */
   void computeError()
   {
-    ROS_ASSERT_MSG(cfg_, "You must call setTebConfig on EdgeTimeOptimal()");
+    assert(cfg_ && "You must call setTebConfig on EdgeTimeOptimal()");
     const VertexTimeDiff* timediff = static_cast<const VertexTimeDiff*>(_vertices[0]);
 
    _error[0] = timediff->dt();
   
-    ROS_ASSERT_MSG(std::isfinite(_error[0]), "EdgeTimeOptimal::computeError() _error[0]=%f\n",_error[0]);
+    TEB_ASSERT_MSG(std::isfinite(_error[0]), "EdgeTimeOptimal::computeError() _error[0]=%f\n",_error[0]);
   }
 
 #ifdef USE_ANALYTIC_JACOBI
@@ -101,7 +102,7 @@ public:
    */
   void linearizeOplus()
   {
-    ROS_ASSERT_MSG(cfg_, "You must call setTebConfig on EdgeTimeOptimal()");
+    TEB_ASSERT_MSG(cfg_, "You must call setTebConfig on EdgeTimeOptimal()");
     _jacobianOplusXi( 0 , 0 ) = 1;
   }
 #endif

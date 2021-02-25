@@ -47,8 +47,9 @@
 #include <teb_local_planner/misc.h>
 #include <teb_local_planner/timed_elastic_band.h>
 #include <teb_local_planner/planner_interface.h>
-#include <teb_local_planner/visualization.h>
+//#include <teb_local_planner/visualization.h>
 #include <teb_local_planner/robot_footprint_model.h>
+#include <teb_local_planner/missing_types.h>
 
 // g2o lib stuff
 #include <g2o/core/sparse_optimizer.h>
@@ -67,6 +68,9 @@
 //
 //#include <nav_msgs/Odometry.h>
 #include <limits.h>
+
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 
 namespace teb_local_planner
 {
@@ -114,8 +118,7 @@ public:
    * @param visual Shared pointer to the TebVisualization class (optional)
    * @param via_points Container storing via-points (optional)
    */
-  TebOptimalPlanner(const TebConfig& cfg, ObstContainer* obstacles = NULL, RobotFootprintModelPtr robot_model = boost::make_shared<PointRobotFootprint>(),
-                    TebVisualizationPtr visual = TebVisualizationPtr(), const ViaPointContainer* via_points = NULL);
+  TebOptimalPlanner(const TebConfig& cfg, ObstContainer* obstacles = NULL, RobotFootprintModelPtr robot_model = boost::make_shared<PointRobotFootprint>(), const ViaPointContainer* via_points = NULL);
   
   /**
    * @brief Destruct the optimal planner.
@@ -130,8 +133,8 @@ public:
     * @param visual Shared pointer to the TebVisualization class (optional)
     * @param via_points Container storing via-points (optional)
     */
-  void initialize(const TebConfig& cfg, ObstContainer* obstacles = NULL, RobotFootprintModelPtr robot_model = boost::make_shared<PointRobotFootprint>(),
-                  TebVisualizationPtr visual = TebVisualizationPtr(), const ViaPointContainer* via_points = NULL);
+  void initialize(const TebConfig& cfg, ObstContainer* obstacles = NULL, RobotFootprintModelPtr robot_model = boost::make_shared<PointRobotFootprint>()
+                  , const ViaPointContainer* via_points = NULL);
   
   /**
     * @param robot_model Shared pointer to the robot shape model used for optimization (optional)
@@ -158,7 +161,7 @@ public:
    *		      otherwise the final velocity will be zero (default: false)
    * @return \c true if planning was successful, \c false otherwise
    */
-  virtual bool plan(const std::vector<geometry_msgs::PoseStamped>& initial_plan, const geometry_msgs::Twist* start_vel = NULL, bool free_goal_vel=false);
+  virtual bool plan(const std::vector<Eigen::Matrix4f>& initial_plan, const Twist* start_vel = NULL, bool free_goal_vel=false);
   
   /**
    * @brief Plan a trajectory between a given start and goal pose (tf::Pose version)
@@ -176,7 +179,7 @@ public:
    *		      otherwise the final velocity will be zero (default: false)
    * @return \c true if planning was successful, \c false otherwise
    */
-  virtual bool plan(const tf::Pose& start, const tf::Pose& goal, const geometry_msgs::Twist* start_vel = NULL, bool free_goal_vel=false);
+  virtual bool plan(const Eigen::Matrix4f& start, const Eigen::Matrix4f& goal, const Twist* start_vel = NULL, bool free_goal_vel=false);
   
   /**
    * @brief Plan a trajectory between a given start and goal pose
@@ -194,7 +197,7 @@ public:
    *		      otherwise the final velocity will be zero (default: false)
    * @return \c true if planning was successful, \c false otherwise
    */
-  virtual bool plan(const PoseSE2& start, const PoseSE2& goal, const geometry_msgs::Twist* start_vel = NULL, bool free_goal_vel=false);
+  virtual bool plan(const PoseSE2& start, const PoseSE2& goal, const Twist* start_vel = NULL, bool free_goal_vel=false);
   
   
   /**
@@ -251,14 +254,14 @@ public:
    * @param vel_start Current start velocity (e.g. the velocity of the robot, only linear.x and angular.z are used,
    *                  for holonomic robots also linear.y)
    */
-  void setVelocityStart(const geometry_msgs::Twist& vel_start);
+  void setVelocityStart(const Twist& vel_start);
   
   /**
    * @brief Set the desired final velocity at the trajectory's goal pose.
    * @remarks Call this function only if a non-zero velocity is desired and if \c free_goal_vel is set to \c false in plan()
    * @param vel_goal twist message containing the translational and angular final velocity 
    */
-  void setVelocityGoal(const geometry_msgs::Twist& vel_goal);
+  void setVelocityGoal(const Twist& vel_goal);
   
   /**
    * @brief Set the desired final velocity at the trajectory's goal pose to be the maximum velocity limit
@@ -316,7 +319,7 @@ public:
    * @param visualization shared pointer to a TebVisualization instance
    * @see visualize
    */
-  void setVisualization(TebVisualizationPtr visualization);
+  //void setVisualization(TebVisualizationPtr visualization);
   
   /**
    * @brief Publish the local plan and pose sequence via ros topics (e.g. subscribe with rviz).
@@ -476,7 +479,7 @@ public:
    * to the next step refer to getVelocityCommand().
    * @param[out] velocity_profile velocity profile will be written to this vector (after clearing any existing content) with the size=no_poses+1
    */
-  void getVelocityProfile(std::vector<geometry_msgs::Twist>& velocity_profile) const;
+  void getVelocityProfile(std::vector<Twist>& velocity_profile) const;
   
     /**
    * @brief Return the complete trajectory including poses, velocity profiles and temporal information
@@ -504,7 +507,7 @@ public:
    * @return \c true, if the robot footprint along the first part of the trajectory intersects with 
    *         any obstacle in the costmap, \c false otherwise.
    */
-  virtual bool isTrajectoryFeasible(base_local_planner::CostmapModel* costmap_model, const std::vector<geometry_msgs::Point>& footprint_spec, double inscribed_radius = 0.0,
+  virtual bool isTrajectoryFeasible(Costmap2D* costmap_model, const std::vector<Eigen::Vector3d>& footprint_spec, double inscribed_radius = 0.0,
           double circumscribed_radius=0.0, int look_ahead_idx=-1);
   
   //@}
@@ -688,12 +691,12 @@ protected:
   RotType prefer_rotdir_; //!< Store whether to prefer a specific initial rotation in optimization (might be activated in case the robot oscillates)
   
   // internal objects (memory management owned)
-  TebVisualizationPtr visualization_; //!< Instance of the visualization class
+  //TebVisualizationPtr visualization_; //!< Instance of the visualization class
   TimedElasticBand teb_; //!< Actual trajectory object
   RobotFootprintModelPtr robot_model_; //!< Robot model
   boost::shared_ptr<g2o::SparseOptimizer> optimizer_; //!< g2o optimizer for trajectory optimization
-  std::pair<bool, geometry_msgs::Twist> vel_start_; //!< Store the initial velocity at the start pose
-  std::pair<bool, geometry_msgs::Twist> vel_goal_; //!< Store the final velocity at the goal pose
+  std::pair<bool, Twist> vel_start_; //!< Store the initial velocity at the start pose
+  std::pair<bool, Twist> vel_goal_; //!< Store the final velocity at the goal pose
 
   bool initialized_; //!< Keeps track about the correct initialization of this class
   bool optimized_; //!< This variable is \c true as long as the last optimization has been completed successful

@@ -95,12 +95,12 @@ public:
    * @brief Construct pose using a geometry_msgs::Pose
    * @param pose geometry_msgs::Pose object
    */ 
-//  PoseSE2(const geometry_msgs::Pose& pose)
-//  {
-//      _position.coeffRef(0) = pose.position.x;
-//      _position.coeffRef(1) = pose.position.y;
-//      _theta = tf::getYaw( pose.orientation );
-//  }
+  PoseSE2(const Eigen::Matrix4f& pose)
+  {
+      _position.coeffRef(0) = pose(0, 3);
+      _position.coeffRef(1) = pose(1, 3);
+      _theta = atan2(pose(1, 0), pose(0, 0));
+  }
   
   /**
    * @brief Construct pose using a tf::Pose
@@ -198,13 +198,12 @@ public:
    * @brief Convert PoseSE2 to a geometry_msgs::Pose
    * @param[out] pose Pose message
    */
-//  void toPoseMsg(geometry_msgs::Pose& pose) const
-//  {
-//    pose.position.x = _position.x();
-//    pose.position.y = _position.y();
-//    pose.position.z = 0;
-//    pose.orientation = tf::createQuaternionMsgFromYaw(_theta);
-//  }
+  void toPoseMsg(Eigen::Matrix4f& pose) const
+  {
+      pose = Eigen::Matrix4f::Identity();
+      pose.topRightCorner<2, 1>() = _position.cast<float>();
+      pose.topLeftCorner<3,3>() =  Eigen::AngleAxisf(_theta, Eigen::Vector3f::UnitZ()).matrix();
+  }
   
   /**
    * @brief Return the unit vector of the current orientation

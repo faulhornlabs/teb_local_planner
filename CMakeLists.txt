@@ -36,7 +36,7 @@ message(STATUS "System: ${CMAKE_SYSTEM}")
 ## System dependencies are found with CMake's conventions
 #SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake_modules)
 #message(STATUS "${CMAKE_MODULE_PATH}")
-find_package(Boost REQUIRED COMPONENTS system thread graph)
+find_package(Boost REQUIRED COMPONENTS system thread graph math_tr1l )
 #find_package(SUITESPARSE REQUIRED)
 find_package(g2o CONFIG REQUIRED)
 
@@ -156,19 +156,67 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
+
+set(HDRS
+    include/teb_local_planner/distance_calculations.h
+    include/teb_local_planner/equivalence_relations.h
+    include/teb_local_planner/graph_search.h
+    include/teb_local_planner/h_signature.h
+    include/teb_local_planner/homotopy_class_planner.h
+    include/teb_local_planner/homotopy_class_planner.hpp
+    include/teb_local_planner/misc.h
+    include/teb_local_planner/missing_types.h
+    include/teb_local_planner/obstacles.h
+    include/teb_local_planner/optimal_planner.h
+    include/teb_local_planner/planner_interface.h
+    include/teb_local_planner/pose_se2.h
+    include/teb_local_planner/recovery_behaviors.h
+    include/teb_local_planner/robot_footprint_model.h
+    include/teb_local_planner/teb_assert.h
+    include/teb_local_planner/teb_config.h
+    #include/teb_local_planner/teb_local_planner_ros.h
+    include/teb_local_planner/timed_elastic_band.h
+    include/teb_local_planner/timed_elastic_band.hpp
+    #include/teb_local_planner/visualization.h
+    #include/teb_local_planner/visualization.hpp
+)
+
+set(HDRS_G2O
+    include/teb_local_planner/g2o_types/base_teb_edges.h
+    include/teb_local_planner/g2o_types/edge_acceleration.h
+    include/teb_local_planner/g2o_types/edge_dynamic_obstacle.h
+    include/teb_local_planner/g2o_types/edge_kinematics.h
+    include/teb_local_planner/g2o_types/edge_obstacle.h
+    include/teb_local_planner/g2o_types/edge_prefer_rotdir.h
+    include/teb_local_planner/g2o_types/edge_shortest_path.h
+    include/teb_local_planner/g2o_types/edge_time_optimal.h
+    include/teb_local_planner/g2o_types/edge_velocity.h
+    include/teb_local_planner/g2o_types/edge_velocity_obstacle_ratio.h
+    include/teb_local_planner/g2o_types/edge_via_point.h
+    include/teb_local_planner/g2o_types/penalties.h
+    include/teb_local_planner/g2o_types/vertex_pose.h
+    include/teb_local_planner/g2o_types/vertex_timediff.h
+)
+
 ## Build the teb_local_planner library
 
-add_library(teb_local_planner
-   src/timed_elastic_band.cpp
-   src/optimal_planner.cpp
-   src/obstacles.cpp
-   src/visualization.cpp
-   src/recovery_behaviors.cpp
-   src/teb_config.cpp
-   src/homotopy_class_planner.cpp
-   src/teb_local_planner_ros.cpp
-   src/graph_search.cpp
+set(SRCS
+    src/timed_elastic_band.cpp
+    src/optimal_planner.cpp
+    src/obstacles.cpp
+    #src/visualization.cpp
+    src/recovery_behaviors.cpp
+    src/teb_config.cpp
+    src/homotopy_class_planner.cpp
+    #src/teb_local_planner_ros.cpp
+    src/graph_search.cpp
 )
+
+add_library(teb_local_planner ${HDRS} ${HDRS_G2O} ${SRCS})
+add_library(teb_local_planner::teb_local_planner ALIAS teb_local_planner)
+source_group(src FILES ${SRCS})
+source_group(teb_local_planner FILES ${HDRS})
+source_group(teb_local_planner\\g2o_types FILES ${HDRS_G2O})
 target_include_directories(teb_local_planner
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -183,10 +231,12 @@ target_include_directories(teb_local_planner
 target_link_libraries(teb_local_planner
   PUBLIC
     Eigen3::Eigen
-    Boost::system Boost::thread Boost::graph
+    Boost::system Boost::thread Boost::graph Boost::math_tr1l 
     g2o::core g2o::stuff g2o::types_icp g2o::types_sba
+    g2o::solver_cholmod g2o::solver_csparse
 )
 
+target_compile_options(teb_local_planner PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/bigobj>)
 
 
 ## Build additional executables

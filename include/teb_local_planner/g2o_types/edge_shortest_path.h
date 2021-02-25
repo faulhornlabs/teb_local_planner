@@ -46,10 +46,11 @@
 
 #include <float.h>
 
-#include <base_local_planner/BaseLocalPlannerConfig.h>
+//#include <base_local_planner/BaseLocalPlannerConfig.h>
 
 #include <teb_local_planner/g2o_types/base_teb_edges.h>
 #include <teb_local_planner/g2o_types/vertex_pose.h>
+#include <teb_local_planner/teb_assert.h>
 
 #include <Eigen/Core>
 
@@ -72,12 +73,12 @@ public:
    * @brief Actual cost function
    */
   void computeError() {
-    ROS_ASSERT_MSG(cfg_, "You must call setTebConfig on EdgeShortestPath()");
+    assert(cfg_ &&"You must call setTebConfig on EdgeShortestPath()");
     const VertexPose *pose1 = static_cast<const VertexPose*>(_vertices[0]);
     const VertexPose *pose2 = static_cast<const VertexPose*>(_vertices[1]);
     _error[0] = (pose2->position() - pose1->position()).norm();
 
-    ROS_ASSERT_MSG(std::isfinite(_error[0]), "EdgeShortestPath::computeError() _error[0]=%f\n", _error[0]);
+    TEB_ASSERT_MSG(std::isfinite(_error[0]), "EdgeShortestPath::computeError() _error[0]=%f\n", _error[0]);
   }
 
 public:
