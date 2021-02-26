@@ -3,158 +3,17 @@ project(teb_local_planner)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_MAP_IMPORTED_CONFIG_RELWITHDEBINFO RELWITHDEBINFO RELEASE)
+set(CMAKE_MAP_IMPORTED_CONFIG_MINSIZEREL MINSIZEREL RELEASE)
 
-# Set to Release in order to speed up the program significantly
+
 if(NOT DEFINED CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release) #None, Debug, Release, RelWithDebInfo, MinSizeRel
 endif()
-## Find catkin macros and libraries
-#find_package(catkin REQUIRED COMPONENTS
-#  base_local_planner
-#  costmap_2d
-#  costmap_converter
-#  cmake_modules
-#  dynamic_reconfigure
-#  geometry_msgs
-#  interactive_markers
-#  message_generation
-#  nav_core
-#  nav_msgs
-#  mbf_costmap_core
-#  mbf_msgs
-#  roscpp
-#  std_msgs
-#  pluginlib
-#  tf2
-#  tf2_eigen
-#  tf2_geometry_msgs
-#  tf2_ros
-#  visualization_msgs
-#)
 
-message(STATUS "System: ${CMAKE_SYSTEM}")
-## System dependencies are found with CMake's conventions
-#SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake_modules)
-#message(STATUS "${CMAKE_MODULE_PATH}")
-find_package(Boost REQUIRED COMPONENTS system thread graph math_tr1l )
-#find_package(SUITESPARSE REQUIRED)
+find_package(Boost REQUIRED COMPONENTS system thread graph)
 find_package(g2o CONFIG REQUIRED)
-
-# Eigen3 FindScript Backward compatibility (ubuntu saucy)
-# Since FindEigen.cmake is deprecated starting from jade.
 find_package(Eigen3 REQUIRED CONFIG)
-#set(EXTERNAL_INCLUDE_DIRS ${Eigen_INCLUDE_DIRS} ${SUITESPARSE_INCLUDE_DIRS} ${G2O_INCLUDE_DIR})
-#set(EXTERNAL_LIBS ${SUITESPARSE_LIBRARIES} ${G2O_LIBRARIES})
-
-## Uncomment this if the package has a setup.py. This macro ensures
-## modules and global scripts declared therein get installed
-## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-# catkin_python_setup()
-
-
-################################################
-## Declare ROS messages, services and actions ##
-################################################
-
-## To declare and build messages, services or actions from within this
-## package, follow these steps:
-## * Let MSG_DEP_SET be the set of packages whose message types you use in
-##   your messages/services/actions (e.g. std_msgs, actionlib_msgs, ...).
-## * In the file package.xml:
-##   * add a build_depend and a run_depend tag for each package in MSG_DEP_SET
-##   * If MSG_DEP_SET isn't empty the following dependencies might have been
-##     pulled in transitively but can be declared for certainty nonetheless:
-##     * add a build_depend tag for "message_generation"
-##     * add a run_depend tag for "message_runtime"
-## * In this file (CMakeLists.txt):
-##   * add "message_generation" and every package in MSG_DEP_SET to
-##     find_package(catkin REQUIRED COMPONENTS ...)
-##   * add "message_runtime" and every package in MSG_DEP_SET to
-##     catkin_package(CATKIN_DEPENDS ...)
-##   * uncomment the add_*_files sections below as needed
-##     and list every .msg/.srv/.action file to be processed
-##   * uncomment the generate_messages entry below
-##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
-
-## Generate messages in the 'msg' folder
-#add_message_files(
-#  FILES
-#  TrajectoryPointMsg.msg
-#  TrajectoryMsg.msg
-#  FeedbackMsg.msg
-#)
-
-## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
-
-## Generate actions in the 'action' folder
-# add_action_files(
-#   FILES
-#   Action1.action
-#   Action2.action
-# )
-
-## Generate added messages and services with any dependencies listed here
-#generate_messages(
-#   DEPENDENCIES
-#   geometry_msgs std_msgs costmap_converter
-#)
-
-#add dynamic reconfigure api
-#find_package(catkin REQUIRED dynamic_reconfigure)
-#generate_dynamic_reconfigure_options(
-#  cfg/TebLocalPlannerReconfigure.cfg
-#)
-
-
-###################################
-## catkin specific configuration ##
-###################################
-## The catkin_package macro generates cmake config files for your package
-## Declare things to be passed to dependent projects
-## INCLUDE_DIRS: uncomment this if you package contains header files
-## LIBRARIES: libraries you create in this project that dependent projects also need
-## CATKIN_DEPENDS: catkin_packages dependent projects also need
-## DEPENDS: system dependencies of this project that dependent projects also need
-#catkin_package(
-#  INCLUDE_DIRS include ${EXTERNAL_INCLUDE_DIRS}
-#  LIBRARIES teb_local_planner ${EXTERNAL_LIBS}
-#  CATKIN_DEPENDS
-#	base_local_planner
-#	costmap_2d
-#	costmap_converter
-#	dynamic_reconfigure
-#	geometry_msgs
-#	interactive_markers
-#	message_runtime
-#	nav_core
-#	nav_msgs
-#	pluginlib
-#	roscpp
-#  mbf_costmap_core
-#	std_msgs
-#        tf2
-#        tf2_ros
-#	visualization_msgs
-#  DEPENDS SUITESPARSE G2O
-#)
-
-###########
-## Build ##
-###########
-
-## Specify additional locations of header files
-## Your package locations should be listed before other locations
-include_directories(include)
-include_directories(
-  SYSTEM
-  ${EXTERNAL_INCLUDE_DIRS}
-  ${catkin_INCLUDE_DIRS}
-)
 
 
 set(HDRS
@@ -199,7 +58,6 @@ set(HDRS_G2O
 )
 
 ## Build the teb_local_planner library
-
 set(SRCS
     src/timed_elastic_band.cpp
     src/optimal_planner.cpp
@@ -217,43 +75,33 @@ add_library(teb_local_planner::teb_local_planner ALIAS teb_local_planner)
 source_group(src FILES ${SRCS})
 source_group(teb_local_planner FILES ${HDRS})
 source_group(teb_local_planner\\g2o_types FILES ${HDRS_G2O})
+set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX _d RELWITHDEBINFO_POSTFIX _rd)
 target_include_directories(teb_local_planner
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include/teb_local_planner>
 )
 
-# Dynamic reconfigure: make sure configure headers are built before any node using them
-#add_dependencies(teb_local_planner ${PROJECT_NAME}_gencfg)
-# Generate messages before compiling the lib
-#add_dependencies(teb_local_planner ${PROJECT_NAME}_generate_messages_cpp)
-
 target_link_libraries(teb_local_planner
   PUBLIC
     Eigen3::Eigen
-    Boost::system Boost::thread Boost::graph Boost::math_tr1l 
+    Boost::system Boost::thread Boost::graph 
     g2o::core g2o::stuff g2o::types_icp g2o::types_sba
     g2o::solver_cholmod g2o::solver_csparse
 )
 
 target_compile_options(teb_local_planner PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/bigobj>)
 
-
-## Build additional executables
-
 add_executable(test_optim_node src/test_optim_node.cpp)
 
 target_link_libraries(test_optim_node
-   teb_local_planner
+   teb_local_planner::teb_local_planner
 )
 
 
 #############
 ## Install ##
 #############
-
-# all install targets should use catkin DESTINATION variables
-# See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
@@ -268,48 +116,19 @@ install(PROGRAMS
   DESTINATION scipts
 )
 
-## Mark executables and/or libraries for installation
-install(TARGETS teb_local_planner
-   LIBRARY DESTINATION lib)
-install(TARGETS test_optim_node
-   RUNTIME DESTINATION bin
+configure_file(cmake/config.cmake.in ${PROJECT_NAME}-config.cmake @ONLY)
+install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-targets DESTINATION 
+    ARCHIVE DESTINATION lib LIBRARY DESTINATION lib RUNTIME DESTINATION bin)
+install(FILES 
+        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake 
+    DESTINATION 
+        lib/cmake/${PROJECT_NAME})
+    
+install(EXPORT ${PROJECT_NAME}-targets NAMESPACE ${PROJECT_NAME}:: DESTINATION lib/cmake/${PROJECT_NAME})
+
+install(
+  FILES
+    ${PUBLIC_HDRS} DESTINATION include/${PROJECT_NAME}/${PROJECT_NAME}
+  FILES
+    ${HDRS_G2O} DESTINATION include/${PROJECT_NAME}/${PROJECT_NAME}/g2o_types
 )
-
-## Mark cpp header files for installation
-install(DIRECTORY include/${PROJECT_NAME}/
-   DESTINATION include/${PROJECT_NAME}
-   #FILES_MATCHING PATTERN "*.h"
-   PATTERN ".svn" EXCLUDE
-)
-
-# ## Mark other files for installation (e.g. launch and bag files, etc.)
-# install(FILES
-#   teb_local_planner_plugin.xml
-#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-# )
-
-# install(DIRECTORY
-#   launch cfg scripts
-#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-#   PATTERN ".svn" EXCLUDE
-# )
-
-#############
-## Testing ##
-#############
-
-# if (CATKIN_ENABLE_TESTING)
-#   catkin_add_gtest(test_teb_basics test/teb_basics.cpp)
-#   if(TARGET test_teb_basics)
-#      target_link_libraries(test_teb_basics teb_local_planner)
-#   endif()
-# endif()
-
-## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_teb_local_planner.cpp)
-# if(TARGET ${PROJECT_NAME}-test)
-#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
-# endif()
-
-## Add folders to be run by python nosetests
-# catkin_add_nosetests(test)
