@@ -126,9 +126,10 @@ install(FILES
     
 install(EXPORT ${PROJECT_NAME}-targets NAMESPACE ${PROJECT_NAME}:: DESTINATION lib/cmake/${PROJECT_NAME})
 
-install(
-  FILES
+
+install(FILES
     ${HDRS} DESTINATION include/${PROJECT_NAME}/${PROJECT_NAME}
-  FILES
+)
+install(FILES
     ${HDRS_G2O} DESTINATION include/${PROJECT_NAME}/${PROJECT_NAME}/g2o_types
 )

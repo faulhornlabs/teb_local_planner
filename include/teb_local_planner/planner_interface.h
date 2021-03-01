@@ -129,7 +129,7 @@ public:
   
   //@}
   
-  
+  virtual bool getLocalPlan(std::vector<Eigen::Matrix4f>& initial_plan) = 0;
   /**
    * @brief Reset the planner.
    */

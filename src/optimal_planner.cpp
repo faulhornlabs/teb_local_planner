@@ -185,6 +185,19 @@ boost::shared_ptr<g2o::SparseOptimizer> TebOptimalPlanner::initOptimizer()
   return optimizer;
 }
 
+bool TebOptimalPlanner::getLocalPlan(std::vector<Eigen::Matrix4f>& local_plan)
+{
+    size_t n = teb_.poses().size();
+    // intermediate points
+    local_plan.resize(n);
+    for (int i = 0; i < n; ++i)
+    {
+        teb_.Pose(i).toPoseMsg(local_plan[i]);
+    }
+
+    return true;
+}
+
 
 bool TebOptimalPlanner::optimizeTEB(int iterations_innerloop, int iterations_outerloop, bool compute_cost_afterwards,
                                     double obst_cost_scale, double viapoint_cost_scale, bool alternative_time_cost)

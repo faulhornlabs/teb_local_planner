@@ -349,6 +349,23 @@ void HomotopyClassPlanner::updateReferenceTrajectoryViaPoints(bool all_trajector
   }
 }
 
+bool HomotopyClassPlanner::getLocalPlan(std::vector<Eigen::Matrix4f>& local_plan)
+{
+    TebOptimalPlannerConstPtr best_teb = bestTeb();
+    if (best_teb)
+    {
+        std::vector<TrajectoryPointMsg> traj;
+        best_teb->getFullTrajectory(traj);
+        local_plan.resize(traj.size());
+        for (size_t i = 0; i < traj.size(); ++i)
+        {
+            local_plan[i] = traj[i].pose;
+        }
+        return true;
+    }
+    return false;
+}
+
 
 void HomotopyClassPlanner::exploreEquivalenceClassesAndInitTebs(const PoseSE2& start, const PoseSE2& goal, double dist_to_obst, const Twist* start_vel)
 {

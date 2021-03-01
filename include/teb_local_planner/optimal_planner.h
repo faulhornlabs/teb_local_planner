@@ -703,6 +703,9 @@ protected:
   
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW    
+
+      // Inherited via PlannerInterface
+    virtual bool getLocalPlan(std::vector<Eigen::Matrix4f>& local_plan) override;
 };
 
 //! Abbrev. for shared instances of the TebOptimalPlanner
