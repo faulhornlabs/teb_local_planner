@@ -11,7 +11,8 @@ if(NOT DEFINED CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release) #None, Debug, Release, RelWithDebInfo, MinSizeRel
 endif()
 
-find_package(Boost REQUIRED COMPONENTS system thread graph)
+#find_package(Boost REQUIRED COMPONENTS system thread graph)
+find_package(Boost REQUIRED COMPONENTS system thread)
 find_package(g2o CONFIG REQUIRED)
 find_package(Eigen3 REQUIRED CONFIG)
 
@@ -85,7 +86,7 @@ target_include_directories(teb_local_planner
 target_link_libraries(teb_local_planner
   PUBLIC
     Eigen3::Eigen
-    Boost::system Boost::thread Boost::graph 
+    Boost::system Boost::thread #Boost::graph 
     g2o::core g2o::stuff g2o::types_icp g2o::types_sba
     g2o::solver_cholmod g2o::solver_csparse
 )
