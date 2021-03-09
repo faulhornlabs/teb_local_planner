@@ -713,7 +713,6 @@ bool TebLocalPlannerROS::transformGlobalPlan(const std::vector<geometry_msgs::ms
 //    tf_->lookupTransform(global_frame, ros::Time(),
 //    plan_pose.header.frame_id, plan_pose.header.stamp,
 //    plan_pose.header.frame_id, plan_to_global_transform);
-
     //let's get the pose of the robot in the frame of the plan
     geometry_msgs::msg::PoseStamped robot_pose = tf_->transform(global_pose, plan_pose.header.frame_id);
 
@@ -777,6 +776,7 @@ bool TebLocalPlannerROS::transformGlobalPlan(const std::vector<geometry_msgs::ms
     // the resulting transformed plan can be empty. In that case we explicitly inject the global goal.
     if (transformed_plan.empty())
     {
+
 //      tf::poseStampedMsgToTF(global_plan.back(), tf_pose);
 //      tf_pose.setData(plan_to_global_transform * tf_pose);
 //      tf_pose.stamp_ = plan_to_global_transform.stamp_;
