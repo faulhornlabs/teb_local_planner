@@ -94,6 +94,8 @@ target_link_libraries(teb_local_planner
 )
 if (MSVC)
   target_link_libraries(teb_local_planner PUBLIC SuiteSparse::suitesparseconfig)
+else()
+  target_link_libraries(teb_local_planner PUBLIC g2o::solver_cholmod)
 endif()
 
 
