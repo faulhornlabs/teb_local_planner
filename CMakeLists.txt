@@ -15,7 +15,9 @@ endif()
 find_package(Boost REQUIRED COMPONENTS system thread)
 find_package(g2o CONFIG REQUIRED)
 find_package(Eigen3 REQUIRED CONFIG)
-
+if (MSVC)
+  find_package(suitesparse CONFIG REQUIRED)
+endif()
 
 set(HDRS
     include/teb_local_planner/distance_calculations.h
@@ -88,8 +90,12 @@ target_link_libraries(teb_local_planner
     Eigen3::Eigen
     Boost::system Boost::thread #Boost::graph 
     g2o::core g2o::stuff g2o::types_icp g2o::types_sba
-    g2o::solver_cholmod g2o::solver_csparse
+    g2o::solver_csparse
 )
+if (MSVC)
+  target_link_libraries(teb_local_planner PUBLIC SuiteSparse::suitesparseconfig)
+endif()
+
 
 target_compile_options(teb_local_planner PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/bigobj>)
 
